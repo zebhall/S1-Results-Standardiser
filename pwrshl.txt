@@ -1,0 +1,2 @@
+pyinstaller --onefile --windowed --clean --icon=data_sheet_icon.ico --add-data 'C:/Users/user/AppData/Local/Programs/Python/Python311/Lib/site-packages/customtkinter;customtkinter/' 'S1-Results-Standardiser.py'
+pyinstaller S1-Results-Standardiser.spec

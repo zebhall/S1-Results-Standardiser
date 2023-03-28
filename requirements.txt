@@ -1,0 +1,13 @@
+altgraph==0.17.3
+chemparse==0.1.2
+customtkinter==5.1.2
+darkdetect==0.8.0
+numpy==1.24.2
+pandas==1.5.3
+pefile==2023.2.7
+pyinstaller==5.9.0
+pyinstaller-hooks-contrib==2023.1
+python-dateutil==2.8.2
+pytz==2023.2
+pywin32-ctypes==0.2.0
+six==1.16.0
