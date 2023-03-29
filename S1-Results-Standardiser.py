@@ -1,5 +1,5 @@
 # S1 Results Standardiser by ZH for PSS
-versionNum = 'v0.0.3'
+versionNum = 'v0.0.4'
 versionDate = '2023/03/27'
 
 import csv
@@ -10,6 +10,7 @@ from tkinter import filedialog
 import customtkinter as ctk
 import pandas as pd
 import numpy as np
+import math
 import chemparse
 
 
@@ -198,17 +199,17 @@ class App(ctk.CTk):
 
         do_LOD_replace = False
         if self.LOD_options_toggle.get():
-            print('Will Replace <LODs...')
             do_LOD_replace = True
             # check LOD settings
             LOD_replacewith = self.LOD_to_combobox.get()
+            print(f'Will Replace <LODs with "{LOD_replacewith}"...')
         
         do_emptycell_replace = False
         if self.emptycell_options_toggle.get():
-            print('Will Replace EmptyCells...')
             do_emptycell_replace = True
             # check empty cell settings
             emptycell_replacewith = self.emptycell_to_combobox.get()
+            print(f'Will Replace EmptyCells with "{emptycell_replacewith}"...')
 
         do_convert_compounds = False
         do_ignoreSi = False
@@ -225,6 +226,7 @@ class App(ctk.CTk):
             if col in self.element_column_matchstrs or col in self.compound_column_matchstrs or col in self.special_conc_column_matchstrs:
                 newcol = []
                 for row in df[col]:
+                    print(f'col={col}, row={row}, rowtype={type(row)}')
                     val = row                
                     if do_convert_units:
                         #print(f'Converting units for {col}')
@@ -236,12 +238,14 @@ class App(ctk.CTk):
                             print(f'in Col "{col}", value "{row}" could not be converted. Proceeding...')
 
                     if do_emptycell_replace:
-                        if row == '':
+                        if (row == '') or (dfValueIsNaN(row)):
                             val = emptycell_replacewith
+                            print(f'replaced Empty Cell with "{emptycell_replacewith}" in Col "{col}"')
 
                     if do_LOD_replace:
                         if row == '< LOD':
                             val = LOD_replacewith
+                            #print(f'replaced "< LOD" with "{LOD_replacewith}" in Col "{col}"')
                         
                     newcol.append(val)
 
@@ -376,6 +380,16 @@ def compound_to_element_factor(element_of_interest:str ,compound:str):
     
     return eoi_mass/compound_mass
     
+def dfValueIsNaN(value):
+    # df NaN values are all type float.
+    # This function checks if a value is NaN, and returns True if it is, False if it isn't.
+    if type(value) != float:
+        return False
+    else:
+        return math.isnan(value)
+
+
+
 
 # Takes csv path and returns df, corrected for stupid multi-header bruker nonsense
 def createDFfromCSV(csvpath:str): 
@@ -387,7 +401,8 @@ def createDFfromCSV(csvpath:str):
         allrowsasdicts = [] # list of dicts, each dict is a row. column headers are keys
         print(f'CSV opened, reading rows...')
         for row in reader:
-            if row[0] in ['¿','',' ','\n']:  # Blank or BOM row found
+            print(row)
+            if (row == []) or (row[0] in ['¿','',' ','\n']):  # Blank or BOM row found. (row == [] is in case of completely blank row, as happens with some CSVs)
                 print('blank/null/¿ row found, skipping...')
                 #continue
             elif row[0] == 'File #':    # Header row found
