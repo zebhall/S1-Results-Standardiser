@@ -330,8 +330,10 @@ def get_element_from_formula(compound:str):
 
 
 def compound_to_element_factor(element_of_interest:str ,compound:str):
-    # Returns the conversion factor to apply to concentration values of a compound to get the concentration of the element of interest
-    # given the element of interest and compound as strs.
+    """ Returns the conversion factor to apply to a compound concentration to get the 
+        concentration of the element of interest (eoi), given the eoi and compound as strs.
+        e.g. given 'Al' and 'Al2O3', returns 0.529251   """
+    
     compound_mass = 0
     eoi_mass_single = 0
     eoi_mass = 0
@@ -381,8 +383,8 @@ def compound_to_element_factor(element_of_interest:str ,compound:str):
     return eoi_mass/compound_mass
     
 def dfValueIsNaN(value):
-    # df NaN values are all type float.
-    # This function checks if a value is NaN, and returns True if it is, False if it isn't.
+    """ Pandas DataFrame NaN values are all type float.
+        This function checks if a value is NaN, and returns True if it is, False if it isn't. """
     if type(value) != float:
         return False
     else:
